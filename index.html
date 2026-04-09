@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusGap | Intelligence (Cloud)</title>
+    <style>
+        :root {
+            --bg: #050505; --fg: #ffffff; --accent: #10b981; --chart: #f59e0b;
+            --danger: #ef4444; --warning: #f59e0b; --safe: #10b981;
+            --card-bg: rgba(255, 255, 255, 0.045); --border: rgba(255, 255, 255, 0.08);
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: var(--font); }
+        body { background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; background-image: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.04) 0%, transparent 40%); }
+        .container { padding: 1.5rem; max-width: 480px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 1.5rem; }
+        header { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.4em; text-transform: uppercase; opacity: 0.3; }
+        .status-badge { display: inline-flex; align-items: center; padding: 0.45rem 0.9rem; border-radius: 2rem; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; background: rgba(255,255,255,0.02); color: var(--accent); border: 1px solid var(--border); gap: 0.5rem; }
+        .main-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2.75rem; padding: 3rem 1.5rem; text-align: center; }
+        .co2-val { font-size: 8rem; font-weight: 700; line-height: 1; letter-spacing: -0.05em; }
+        .pill-btn { background: #fff; color: #000; border: none; padding: 1.1rem; border-radius: 3rem; font-weight: 800; text-transform: uppercase; cursor: pointer; width: 100%; margin-top: 1rem; }
+        .btn-blue { background: #3b82f6; color: #fff; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(25px); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
+        .modal-active { display: flex; }
+        .modal-content { background: #111; width: 100%; padding: 2.5rem 2rem; border-radius: 3rem 3rem 0 0; }
+        .vent-overlay { position: fixed; inset: 0; background: rgba(16, 185, 129, 0.1); backdrop-filter: blur(20px); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .vent-active { display: flex; }
+    </style>
+</head>
+<body>
+    <div class="vent-overlay" id="v-overlay">
+        <div style="background:#000; padding:2rem; border-radius:2rem; text-align:center; border:1px solid var(--border)">
+            <h2>Fresh Air Mode</h2>
+            <p style="opacity:0.5; margin:1rem 0 2rem">CO2 levels are dropping. Brain capacity restoring.</p>
+            <button class="pill-btn" onclick="document.getElementById('v-overlay').classList.remove('vent-active')">Dismiss</button>
+        </div>
+    </div>
+    <div class="container">
+        <header>
+            <div class="logo">FocusGap Cloud</div>
+            <div class="status-badge"><div id="s-dot" style="width:6px; height:6px; background:#ccc; border-radius:50%"></div> <span id="s-text">Offline</span></div>
+        </header>
+        <section class="main-card">
+            <div style="font-size:0.7rem; opacity:0.3; letter-spacing:0.3em; margin-bottom:1rem">INDOOR CO2 PPM</div>
+            <div class="co2-val" id="co2-val">--</div>
+            <div id="score" style="color:var(--accent); font-size:0.6rem; font-weight:800; margin-top:1rem">READY TO SYNC</div>
+        </section>
+        <button class="pill-btn btn-blue" onclick="connectBT()">ᛒ SYNC LOCAL SENSOR</button>
+    </div>
+    <script>
+        let bleD, bleS, lS = { co2: 600, trend: 0 };
+        const UUID = { s: 0xFF01, c: 0xFF02, t: 0xFF03, h: 0xFF04 };
+        async function connectBT() {
+            try {
+                bleD = await navigator.bluetooth.requestDevice({ filters:[{name:'FocusGap Intelligence'}], optionalServices:[UUID.s] });
+                bleS = await bleD.gatt.connect(); const s = await bleS.getPrimaryService(UUID.s);
+                const chars = [await s.getCharacteristic(UUID.c), await s.getCharacteristic(UUID.t), await s.getCharacteristic(UUID.h)];
+                for (let c of chars) { await c.startNotifications(); c.addEventListener('characteristicvaluechanged', (e) => {
+                    const u = e.target.uuid.toLowerCase();
+                    if(u.includes('ff02')) lS.co2 = e.target.value.getUint32(0, true);
+                    updateUI();
+                }); }
+                document.getElementById('s-text').innerText = "Linked"; document.getElementById('s-dot').style.background = "#3b82f6";
+            } catch (e) { alert("BT Auth Failed. Use Bluefy on iOS!"); }
+        }
+        function updateUI() {
+            const co2 = Math.round(lS.co2); document.getElementById('co2-val').innerText = co2;
+            const score = Math.max(0, Math.round(100 - (Math.pow(Math.max(0, co2 - 400), 1.2) / 38)));
+            document.getElementById('score').innerText = 'BRAIN OPTIMA: ' + score + '%';
+            if(co2 > 1200) document.body.style.background = 'rgba(239, 68, 68, 0.05)';
+            else document.body.style.background = 'var(--bg)';
+        }
+    </script>
+</body>
+</html>
