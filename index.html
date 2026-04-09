@@ -3,108 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel='manifest' href='manifest.json'><link rel='apple-touch-icon' href='https://cdn-icons-png.flaticon.com/512/2104/2104593.png'><title>FocusGap | Intelligence Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2104/2104593.png">
+    <title>FocusGap | Intelligence</title>
     <style>
         :root {
             --bg: #050505; --fg: #ffffff; --accent: #10b981; --chart: #f59e0b;
-            --danger: #ef4444; --warning: #f59e0b; --safe: #10b981;
+            --danger: #ef4444; --warning: #f59e0b;
             --card-bg: rgba(255, 255, 255, 0.045); --border: rgba(255, 255, 255, 0.08);
-            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: var(--font); }
-        body { 
-            background: var(--bg); color: var(--fg); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
-            background-image: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.04) 0%, transparent 40%), radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.04) 0%, transparent 40%);
-        }
-        .container { padding: 1.5rem; max-width: 480px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 3rem; }
-        
+        body { background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; background-image: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.04) 0%, transparent 40%); }
+        .container { padding: 1.5rem; max-width: 480px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 1.5rem; }
         header { display: flex; justify-content: space-between; align-items: center; }
-        .logo-group { text-align: left; }
         .logo { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.4em; text-transform: uppercase; opacity: 0.3; }
-        .status-badge { display: inline-flex; align-items: center; padding: 0.45rem 0.9rem; border-radius: 2rem; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; background: rgba(255,255,255,0.02); color: var(--accent); border: 1px solid var(--border); gap: 0.5rem; margin-top: 0.4rem; }
-        .dot { width: 6px; height: 6px; background: #555; border-radius: 50%; transition: 0.3s; }
-        
-        .main-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2.75rem; padding: 3.5rem 1.5rem; text-align: center; position: relative; backdrop-filter: blur(30px); }
-        .co2-val { font-size: 8rem; font-weight: 700; line-height: 1; letter-spacing: -0.05em; margin-bottom: 0.5rem; transition: var(--transition); }
-        .co2-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3em; opacity: 0.25; }
-        .score-pill { display: inline-block; margin-top: 1.5rem; padding: 0.4rem 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 2rem; font-size: 0.65rem; font-weight: 800; color: var(--accent); text-transform: uppercase; }
-
-        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .m-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 1.5rem; text-align: center; }
-        .m-label { font-size: 0.55rem; text-transform: uppercase; opacity: 0.3; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
-        .m-val { font-size: 1.6rem; font-weight: 700; }
-
-        .analytics-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2.75rem; padding: 1.75rem; position: relative; }
-        .chart-viewport { height: 160px; position: relative; margin-top: 1rem; }
-        .svg-chart { width: 100%; height: 100%; overflow: visible; }
-        .c-path { fill: none; stroke: var(--chart); stroke-width: 3.5; stroke-linecap: round; }
+        .status-badge { display: inline-flex; align-items: center; padding: 0.45rem 0.9rem; border-radius: 2rem; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; background: rgba(255,255,255,0.02); color: var(--accent); border: 1px solid var(--border); gap: 0.5rem; }
+        .dot { width: 6px; height: 6px; background: #555; border-radius: 50%; }
+        .main-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2.75rem; padding: 4rem 1.5rem; text-align: center; backdrop-filter: blur(30px); }
+        .co2-val { font-size: 8rem; font-weight: 700; line-height: 1; letter-spacing: -0.05em; margin-bottom: 0.5rem; }
+        .score-pill { display: inline-block; margin-top: 1.5rem; padding: 0.4rem 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 2rem; font-size: 0.65rem; font-weight: 800; color: var(--accent); }
+        .analytics-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2.5rem; padding: 1.75rem; min-height: 200px; }
+        .pill-btn { background: #fff; color: #000; border: none; padding: 1.25rem; border-radius: 3rem; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; }
+        .btn-blue { background: #3b82f6; color: #fff; }
+        .btn-active { background: var(--accent); }
+        .svg-chart { width: 100%; height: 160px; overflow: visible; margin-top: 1rem; }
+        .c-path { fill: none; stroke: var(--chart); stroke-width: 4; stroke-linecap: round; }
         .c-area { fill: url(#grad); opacity: 0.2; }
-
-        .pill-btn { background: #fff; color: #000; border: none; padding: 1.25rem; border-radius: 3rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: var(--transition); width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
-        .btn-blue { background: #3b82f6; color: #fff; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3); }
-        .btn-active { background: var(--accent); color: #fff; box-shadow: none; }
-
-        .vent-overlay { position: fixed; inset: 0; background: rgba(16, 185, 129, 0.15); backdrop-filter: blur(20px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 2rem; }
-        .vent-card { background: #000; padding: 2.5rem; border-radius: 3rem; text-align: center; border: 1px solid var(--border); width: 100%; max-width: 400px; }
     </style>
 </head>
 <body>
-    <div class="vent-overlay" id="v-overlay">
-        <div class="vent-card">
-            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem">Fresh Air Mode</h2>
-            <p style="opacity: 0.5; font-size: 0.9rem; line-height: 1.4; margin-bottom: 2rem">Cognitive capacity is restoring. Keep ventilating until the score reaches 95%+.</p>
-            <button class="pill-btn" onclick="document.getElementById('v-overlay').style.display='none'">Dismiss</button>
-        </div>
-    </div>
-
     <div class="container">
         <header>
-            <div class="logo-group">
-                <div class="logo">FocusGap Intelligence</div>
-                <div class="status-badge"><div class="dot" id="sys-dot"></div> <span id="sys-text">Offline</span></div>
-            </div>
+            <div class="logo">FocusGap Intelligence</div>
+            <div class="status-badge"><div class="dot" id="sys-dot"></div> <span id="sys-text">Offline</span></div>
         </header>
 
         <section class="main-card">
-            <div class="co2-label">Indoor CO2 PPM</div>
+            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3em; opacity: 0.25;">Indoor CO2 PPM</div>
             <div class="co2-val" id="co2-val">--</div>
-            <div class="score-pill" id="score-text">Waiting for Sync</div>
-        </section>
-
-        <section class="metrics-grid">
-            <div class="m-card"><div class="m-label">O2 Depth</div><div class="m-val">415</div></div>
-            <div class="m-card"><div class="m-label">Stale In</div><div class="m-val" id="pred-val">--</div></div>
+            <div class="score-pill" id="score-text">Ready to Sync</div>
         </section>
 
         <section class="analytics-card">
-            <div style="font-size:0.6rem; opacity:0.3; font-weight:800; text-transform:uppercase; letter-spacing:0.1em">Live Intelligence Trend</div>
-            <div class="chart-viewport" id="chart-hint" style="display:flex; align-items:center; justify-content:center; opacity:0.2">
-                <p style="font-size:0.8rem">Connect sensor to see history</p>
-            </div>
-            <div class="chart-viewport" id="chart-main" style="display:none">
-                <svg class="svg-chart" viewBox="0 0 400 180" preserveAspectRatio="none">
-                    <defs><linearGradient id="grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--chart)" stop-opacity="0.8"/><stop offset="100%" stop-color="var(--chart)" stop-opacity="0"/></linearGradient></defs>
-                    <path id="c-area" class="c-area" d=""></path><path id="c-path" class="c-path" d=""></path>
-                </svg>
-            </div>
+            <div id="hint" style="text-align:center; padding-top:4rem; opacity:0.3; font-size:0.8rem">No data received</div>
+            <svg id="chart-main" class="svg-chart" viewBox="0 0 400 180" preserveAspectRatio="none" style="display:none">
+                <defs><linearGradient id="grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--chart)" stop-opacity="0.8"/><stop offset="100%" stop-color="var(--chart)" stop-opacity="0"/></linearGradient></defs>
+                <path id="c-area" class="c-area" d=""></path><path id="c-path" class="c-path" d=""></path>
+            </svg>
         </section>
 
-        <button class="pill-btn btn-blue" id="main-btn" onclick="connectBT()">ᛒ Connect to Sensor</button>
+        <button class="pill-btn btn-blue" id="main-btn" onclick="connectBT()">Connect Sensor</button>
     </div>
 
     <script>
-        let bleD, bleS, lStats = { co2: 600 }, hData = [];
+        let bleD, bleS, hData = [];
         const S_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
         const C_UUID = "0000ff02-0000-1000-8000-00805f9b34fb";
 
         async function connectBT() {
             try {
                 const btn = document.getElementById('main-btn');
-                btn.innerText = "Searching...";
+                btn.innerText = "Connecting...";
                 
                 bleD = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'FocusGap Intelligence' }],
+                    acceptAllDevices: true,
                     optionalServices: [S_UUID]
                 });
 
@@ -113,55 +76,42 @@
                 const characteristic = await service.getCharacteristic(C_UUID);
                 
                 await characteristic.startNotifications();
-                
                 characteristic.addEventListener('characteristicvaluechanged', (e) => {
                     const val = e.target.value.getUint32(0, true);
-                    lStats.co2 = val;
-                    hData.push(val); if(hData.length > 40) hData.shift();
-                    updateUI(val);
+                    updateStats(val);
                 });
 
-                document.getElementById('sys-text').innerText = "Linked via BLE";
+                document.getElementById('sys-text').innerText = "Linked";
                 document.getElementById('sys-dot').style.background = "#3b82f6";
-                document.getElementById('chart-hint').style.display = 'none';
                 document.getElementById('chart-main').style.display = 'block';
-                btn.innerText = "Active Connection";
+                document.getElementById('hint').style.display = 'none';
+                btn.innerText = "Linked via BLE";
                 btn.classList.add('btn-active');
             } catch (e) {
-                alert("Connection failed. Try again!");
-                document.getElementById('main-btn').innerText = "ᛒ Connect to Sensor";
+                alert("Fail: " + e.message);
+                document.getElementById('main-btn').innerText = "Connect Sensor";
             }
         }
 
-        function updateUI(co2) {
-            document.getElementById('co2-val').innerText = co2;
-            const score = Math.max(0, Math.round(100 - (Math.pow(Math.max(0, co2 - 400), 1.2) / 38)));
-            document.getElementById('score-text').innerText = Brain Optima: %;
+        function updateStats(val) {
+            document.getElementById('co2-val').innerText = val;
+            const score = Math.max(0, Math.round(100 - (Math.pow(Math.max(0, val - 400), 1.2) / 38)));
+            document.getElementById('score-text').innerText = `BRAIN OPTIMA: ${score}%`;
             
-            // Intelligence logic
-            if(hData.length > 5) {
-                const trend = (hData[hData.length-1] - hData[hData.length-5]) / 2;
-                if(trend > 0.5) document.getElementById('pred-val').innerText = Math.round((1000 - co2) / trend) + "m";
-                else if(trend < -1) {
-                    document.getElementById('pred-val').innerText = "Ventilating";
-                    document.getElementById('v-overlay').style.display = 'flex';
-                } else document.getElementById('pred-val').innerText = "Stable";
-                
-                drawChart(hData);
-            }
-            
-            // Visual feedback
-            if(co2 > 1000) document.getElementById('co2-val').style.color = 'var(--danger)';
-            else if(co2 > 800) document.getElementById('co2-val').style.color = 'var(--warning)';
-            else document.getElementById('co2-val').style.color = 'var(--fg)';
+            hData.push(val); if(hData.length > 50) hData.shift();
+            if(hData.length > 2) drawChart(hData);
         }
 
         function drawChart(data) {
-            const path = document.getElementById('c-path'), area = document.getElementById('c-area');
             const min = Math.min(...data) - 50, max = Math.max(...data) + 50;
-            const pts = data.map((d, i) => ({ x: (i/(data.length-1))*400, y: 160 - ((d-min)/(max-min+1))*160 }));
-            let d = M  ; pts.forEach(pt => d +=  L  );
-            path.setAttribute('d', d); area.setAttribute('d', d +  L 400 180 L 0 180 Z);
+            const pts = data.map((d, i) => ({ 
+                x: (i/(data.length-1))*400, 
+                y: 180 - ((d-min)/(max-min+1))*180 
+            }));
+            let dString = `M ${pts[0].x} ${pts[0].y}`;
+            pts.forEach(p => { dString += ` L ${p.x} ${p.y}`; });
+            document.getElementById('c-path').setAttribute('d', dString);
+            document.getElementById('c-area').setAttribute('d', dString + ` L 400 180 L 0 180 Z`);
         }
     </script>
 </body>
