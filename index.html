@@ -3,143 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FocusGap Intelligence | Debug v2.3</title>
+    <title>FocusGap | BULLETPROOF v2.4</title>
     <style>
-        :root {
-            --bg: #050505; --fg: #ffffff; --accent: #10b981; --chart: #f59e0b;
-            --card-bg: rgba(255, 255, 255, 0.045); --border: rgba(255, 255, 255, 0.08);
-            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font); }
-        body { background: var(--bg); color: var(--fg); min-height: 100vh; padding: 1.5rem; }
-        .container { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
-        .main-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2.5rem; padding: 3rem 1.5rem; text-align: center; }
-        .co2-val { font-size: 7rem; font-weight: 700; line-height: 1; letter-spacing: -0.05em; margin: 1rem 0; }
-        .pill-btn { background: #3b82f6; color: #fff; border: none; padding: 1.2rem; border-radius: 3rem; font-weight: 800; text-transform: uppercase; cursor: pointer; width: 100%; transition: 0.3s; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3); }
-        .pill-btn:active { transform: scale(0.95); opacity: 0.8; }
-        #debug-log { background: rgba(0,0,0,0.8); border: 1px solid #333; border-radius: 1rem; padding: 1rem; font-family: monospace; font-size: 0.7rem; color: #0f0; min-height: 120px; overflow-y: auto; white-space: pre-wrap; margin-top: 1rem; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: #555; margin-right: 5px; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; text-align: center; }
+        .card { background: #111; padding: 30px; border-radius: 20px; border: 1px solid #333; }
+        .btn { background: #ffcc00; color: #000; padding: 20px; border: none; border-radius: 50px; width: 100%; font-weight: bold; font-size: 1.2rem; margin: 20px 0; }
+        #log { background: #222; color: #0f0; padding: 15px; border-radius: 10px; font-size: 10px; text-align: left; min-height: 200px; white-space: pre-wrap; overflow-y: auto; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header style="display:flex; justify-content:space-between; align-items:center">
-            <span style="font-size:0.6rem; letter-spacing:0.2em; opacity:0.5; font-weight:800">FOCUSGAP CLOUD v2.3</span>
-            <div id="status-tag" style="font-size:0.6rem; font-weight:800; color:#555"><span class="dot" id="s-dot"></span>OFFLINE</div>
-        </header>
-
-        <section class="main-card">
-            <div style="font-size:0.7rem; opacity:0.3; letter-spacing:0.2em">CALIBRATED CO2</div>
-            <div class="co2-val" id="co2-val">--</div>
-            <div id="score" style="color:var(--accent); font-size:0.6rem; font-weight:800; text-transform:uppercase">System Ready</div>
-        </section>
-
-        <button class="pill-btn" onclick="connectBT()" id="main-btn">Connect Sensor</button>
-
-        <div id="debug-log">Debug Engine Loaded.</div>
+    <div class="card">
+        <h1 style="font-size: 1rem; opacity: 0.5;">DEBUG MODE v2.4 (YELLOW)</h1>
+        <div id="co2" style="font-size: 5rem; font-weight: bold; margin: 20px;">--</div>
+        
+        <button class="btn" onclick="runTest()">CONNECT SENSOR</button>
+        
+        <div id="log">Console ready...</div>
     </div>
 
     <script>
-        const logEl = document.getElementById('debug-log');
-        const co2El = document.getElementById('co2-val');
-        const btnEl = document.getElementById('main-btn');
-        const dotEl = document.getElementById('s-dot');
-        const scoreEl = document.getElementById('score');
+        const logBox = document.getElementById('log');
+        const co2Box = document.getElementById('co2');
 
-        function log(msg) {
-            console.log(msg);
-            const t = new Date().toLocaleTimeString();
-            logEl.innerText += \n[] ;
-            logEl.scrollTop = logEl.scrollHeight;
+        function print(msg) {
+            logBox.innerText += '\n[' + new Date().toLocaleTimeString() + '] ' + msg;
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
-        async function connectBT() {
-            log("--- NEW CONNECTION ATTEMPT ---");
+        async function runTest() {
+            print(">>> Button clicked!");
             
             if (!navigator.bluetooth) {
-                log("FAIL: Web Bluetooth API missing.");
-                alert("Bluefy setup incomplete or incompatible browser.");
+                print("Error: navigator.bluetooth missing");
                 return;
             }
 
             try {
-                // Compatible UUID formats for iOS
-                const S_UUID = "ff01"; 
-                const C_UUID = "ff02";
-
-                log("Requesting device with Filter {name: 'FocusGap Intelligence'}...");
-                
-                // Using a more inclusive filter
-                const device = await navigator.bluetooth.requestDevice({
-                    filters: [
-                        { name: 'FocusGap Intelligence' },
-                        { namePrefix: 'FocusGap' }
-                    ],
-                    optionalServices: [S_UUID, 0xff01]
+                print("Requesting device...");
+                const dev = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: ['0000ff01-0000-1000-8000-00805f9b34fb']
                 });
 
-                log("Device found: " + device.name);
-                log("ID: " + device.id);
-                dotEl.style.background = "#f59e0b";
+                print("Device selected: " + dev.name);
+                const server = await dev.gatt.connect();
+                print("GATT Connected");
+
+                const service = await server.getPrimaryService('0000ff01-0000-1000-8000-00805f9b34fb');
+                const char = await service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb');
                 
-                device.addEventListener('gattserverdisconnected', () => {
-                    log("!! DISCONNECTED !!");
-                    dotEl.style.background = "#555";
-                    btnEl.innerText = "Reconnect Sensor";
+                await char.startNotifications();
+                print("Notifications on!");
+
+                char.addEventListener('characteristicvaluechanged', (e) => {
+                    const val = e.target.value.getUint32(0, true);
+                    co2Box.innerText = val;
                 });
 
-                log("Connecting to GATT...");
-                const server = await device.gatt.connect();
-                
-                log("Connected. Discovering Service: " + S_UUID);
-                const service = await server.getPrimaryService(S_UUID);
-                
-                log("Service Found. Requesting Char: " + C_UUID);
-                const characteristic = await service.getCharacteristic(C_UUID);
-                
-                log("Characterictic Linked. Subscribing...");
-                await characteristic.startNotifications();
-                
-                characteristic.addEventListener('characteristicvaluechanged', (e) => {
-                    // Try different parsing methods just in case
-                    let val;
-                    try {
-                        val = e.target.value.getUint32(0, true);
-                    } catch(err) {
-                        val = e.target.value.getUint16(0, true);
-                        log("Warning: data was 16bit, not 32bit.");
-                    }
-                    
-                    co2El.innerText = val;
-                    const score = Math.max(0, Math.round(100 - (Math.pow(Math.max(0, val - 400), 1.2) / 38)));
-                    scoreEl.innerText = 'BRAIN OPTIMA: ' + score + '%';
-                    
-                    if(val > 1000) document.body.style.background = 'rgba(239,68,68,0.05)';
-                    else document.body.style.background = 'var(--bg)';
-                });
-
-                log(">>> SYNC ACTIVE <<<");
-                dotEl.style.background = "#3b82f6";
-                btnEl.innerText = "Active Link";
-                btnEl.style.background = "#10b981";
-
-            } catch (error) {
-                log("CRITICAL ERROR: " + error.name);
-                log("Message: " + (error.message || "No message provided"));
-                log("Full Trace: " + JSON.stringify(error));
-                dotEl.style.background = "#ef4444";
+            } catch (err) {
+                print("FAIL: " + err.name + " -> " + err.message);
             }
         }
 
-        window.onload = () => {
-            if (!navigator.bluetooth) {
-                log("Incompatible browser engine.");
-                btnEl.style.background = "#333";
-                btnEl.innerText = "Unsupported";
-            } else {
-                log("Ready. Use Bluefy for best experience.");
-            }
-        };
+        window.onload = () => { print("Page loaded. Ready for test."); };
     </script>
 </body>
 </html>
