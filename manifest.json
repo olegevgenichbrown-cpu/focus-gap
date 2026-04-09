@@ -1,0 +1,15 @@
+{
+  "name": "FocusGap Intelligence",
+  "short_name": "FocusGap",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2104/2104593.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
